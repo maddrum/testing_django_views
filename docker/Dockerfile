@@ -28,7 +28,8 @@ RUN apt-get update \
 	build-essential git-core gcc \
 	cmake musl-dev
 
-RUN pip3 install packaging
+RUN pip install --upgrade pip
+RUN pip install packaging
 
 VOLUME $DOCKYARD_PROJECT_DIR
 WORKDIR $DOCKYARD_PROJECT_DIR

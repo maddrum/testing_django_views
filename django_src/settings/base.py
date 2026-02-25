@@ -13,16 +13,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-print(BASE_DIR)
 TRUE_VALUES = ["yes", "on", "true", "1"]
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", 'true').lower() in TRUE_VALUES
+DEBUG = os.getenv("DEBUG", "true").lower() in TRUE_VALUES
 
 ALLOWED_HOSTS = []
 
@@ -35,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "apps.working_times.apps.WorkingTimesConfig",
 ]
 
 MIDDLEWARE = [
@@ -45,7 +45,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'apps.working_times',
 ]
 
 ROOT_URLCONF = "settings.urls"

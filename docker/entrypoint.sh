@@ -4,6 +4,7 @@ set -o errexit
 set -o pipefail
 set -e
 
+pwd
 pip install -r requirements.txt --user
 
 if [ -f "manage.py" ]; then
