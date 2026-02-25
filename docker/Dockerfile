@@ -1,12 +1,11 @@
-FROM python:3.12
+FROM python:3.12.12-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-ENV DOCKYARD_PROJECT_DIR=/project
+ENV DOCKYARD_PROJECT_DIR=/opt
 ENV DOCKYARD_USER=docker
 
-RUN mkdir $DOCKYARD_PROJECT_DIR
 RUN groupadd -r $DOCKYARD_USER -g 1000 \
 	&& useradd -u 1000 -r -g $DOCKYARD_USER -d $DOCKYARD_PROJECT_DIR -s /sbin/nologin -c "Docker image user" $DOCKYARD_USER \
 	&& chown -R $DOCKYARD_USER:$DOCKYARD_USER $DOCKYARD_PROJECT_DIR
@@ -38,4 +37,5 @@ USER $DOCKYARD_USER
 
 EXPOSE 8000
 
-CMD ["/docker/run-server.sh local"]
+ENTRYPOINT ["/docker/entrypoint.sh"]
+CMD ["/docker/run-server.sh"]

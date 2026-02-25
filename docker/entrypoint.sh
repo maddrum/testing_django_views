@@ -4,7 +4,10 @@ set -o errexit
 set -o pipefail
 set -e
 
-pip3 install -r requirements.txt
-python manage.py migrate --noinput
+pip install -r requirements.txt --user
+
+if [ -f "manage.py" ]; then
+  python manage.py migrate --noinput
+fi
 
 exec "$@"

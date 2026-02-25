@@ -1,6 +1,6 @@
 services:
     web:
-        command: /docker/run-server.sh local
+        command: /docker/run-server.sh
         build:
             context: ./docker
             dockerfile: Dockerfile
