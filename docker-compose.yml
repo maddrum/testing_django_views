@@ -1,0 +1,46 @@
+services:
+    web:
+        command: /docker/run-server.sh local
+        build:
+            context: ./docker
+            dockerfile: Dockerfile
+        image: testing_django_views/django:6.0
+        container_name: testing_django_views.django
+        env_file: ./docker/.env
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./django_src:/opt
+
+    python-black:
+        image: pyfound/black:latest
+        container_name: myhealth.python-black
+        command: blackd --bind-host 0.0.0.0 --bind-port 45484
+        ports:
+            - "45484:45484"
+   
+    redis:
+        image: "redis:alpine"
+        command: redis-server
+        container_name: testing_django_views.redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./redis-data/redis_data:/data
+            - ./redis-data/redis_conf:/usr/local/etc/redis
+        restart: always
+    
+    selenium-standalone-chrome:
+        image: selenium/standalone-chrome
+        container_name: testing_django_views.e2e
+        shm_size: "6gb"
+        environment:
+            SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+            SE_NODE_MAX_SESSIONS: 20
+            SCREEN_WIDTH: 1920
+            SCREEN_HEIGHT: 1080
+            VNC_NO_PASSWORD: 1
+            HOME: /home/seluser
+        ports:
+            - "4444:4444"
+            - "5900:5900"
