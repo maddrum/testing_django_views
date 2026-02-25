@@ -1,0 +1,7 @@
+/.idea/*
+/docker/.env
+/django_src/.cache
+/django_src/.local
+/django_src/settings/settings.py
+/redis-data/*
+db.sqlite3
