@@ -30,12 +30,12 @@ class WorkingTimeFormTests(TestCase):
 
     def test_invalid_from_and_to_time(self):
         _form_data = self.form_data.copy()
-        _form_data["from_time"] = "25:00"
+        _form_data["from_time"] = "24:00"
         form = WorkingTimeForm(data=_form_data)
         self.assertFalse(form.is_valid())
 
         _form_data = self.form_data.copy()
-        _form_data["to_time"] = "25:00"
+        _form_data["to_time"] = "24:00"
         form = WorkingTimeForm(data=_form_data)
         self.assertFalse(form.is_valid())
 
