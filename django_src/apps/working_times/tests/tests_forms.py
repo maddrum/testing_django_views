@@ -99,3 +99,4 @@ class WorkingTimeFormTests(TestCase):
         del form_data["note"]
         form = WorkingTimeForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
+
