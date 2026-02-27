@@ -13,15 +13,12 @@ the system must flexibly handle specific edge cases and midnight transitions.
 | Scenario | Input Examples | System Interpretation |
 | :--- | :--- | :--- |
 | **Standard** | `10:00 - 18:00` | Open from morning until evening. |
-| **Until Midnight** | `10:00 - 24:00` | Shop operates until the end of the day. |
-| **24/7 (Non-stop)** | `00:00 - 24:00` | Shop is open all day. |
+| **Until Midnight** | `10:00 - 00:00` | Shop operates until the end of the day. |
+| **24/7 (Non-stop)** | `00:00 - 00:00` | Shop is open all day. |
 
 
 ### Technical Constraints
 * **Time Format:** Must follow the 24-hour format (e.g., `%H:%M` -> `13:45`).
-* **Minimum Duration:** Shops must remain open for a minimum duration, subject to a **configurable global setting**.
-* **Flexibility:** Both the time format and the minimum working hours should be easily adjustable in the project settings.
-* **User data:** To make it easy and consistent for the user, all inputs like `24:00` should be allowed and considered to be `00:00` or `midnight`.
 
 ---
 
