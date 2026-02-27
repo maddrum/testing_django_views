@@ -1,15 +1,32 @@
 import datetime
+import typing
 
 from django import forms
+from django.core.exceptions import ValidationError
 
 from .models import WorkingTime
 from .settings import MIN_WORKING_TIME_DURATION_HOURS
 
 
 class WorkingTimeForm(forms.ModelForm):
+    _adjusted_fields = None
+
     class Meta:
         model = WorkingTime
         fields = ["from_time", "to_time"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._adjusted_midnight_initial = {}
+
+    @property
+    def adjusted_midnight_initial(self) -> typing.Dict:
+        """
+        Adjusted midnight initials.
+
+        :rtype: typing.Dict
+        """
+        return self._adjusted_midnight_initial
 
     @staticmethod
     def _expand_to_datetime(time: datetime.time) -> datetime.datetime:
@@ -56,12 +73,19 @@ class WorkingTimeForm(forms.ModelForm):
             return
 
         _value[0] = "00"
-        self.data["to_time"] = ":".join(_value)
+        self._adjusted_midnight_initial[field] = self.data[field]
+        self.data[field] = ":".join(_value)
 
     def full_clean(self):
-        self._adjust_midnight(field="from_time")
         self._adjust_midnight(field="to_time")
+        self._adjust_midnight(field="from_time")
         super().full_clean()
+
+    def clean_to_time(self):
+        to_time = self.cleaned_data.get("to_time")
+        if to_time == datetime.time(0, 0):
+            raise ValidationError("To time must be greater than 00:00")
+        return to_time
 
     def clean(self):
         cleaned_data = super().clean()
@@ -78,10 +102,10 @@ class WorkingTimeForm(forms.ModelForm):
 
         # make sure to time is greater than from time
         if expanded_to_time <= expanded_from_time and to_time != datetime.time(0, 0):
-            raise forms.ValidationError("End time must be greater than start time")
+            raise ValidationError("End time must be greater than start time")
 
         # make sure minimal working hours are met
         if total_duration < MIN_WORKING_TIME_DURATION_HOURS and to_time != datetime.time(0, 0):
-            raise forms.ValidationError(f"Total duration should be at least {MIN_WORKING_TIME_DURATION_HOURS} hour")
+            raise ValidationError(f"Total duration should be at least {MIN_WORKING_TIME_DURATION_HOURS} hour")
 
         return cleaned_data
