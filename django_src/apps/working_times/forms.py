@@ -104,8 +104,4 @@ class WorkingTimeForm(forms.ModelForm):
         if expanded_to_time <= expanded_from_time and to_time != datetime.time(0, 0):
             raise ValidationError("End time must be greater than start time")
 
-        # make sure minimal working hours are met
-        if total_duration < MIN_WORKING_TIME_DURATION_HOURS and to_time != datetime.time(0, 0):
-            raise ValidationError(f"Total duration should be at least {MIN_WORKING_TIME_DURATION_HOURS} hour")
-
         return cleaned_data

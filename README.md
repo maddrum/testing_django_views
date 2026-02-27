@@ -6,7 +6,7 @@ using **Server-Side Rendering (SSR)**.
 
 # Project Details
 The core functionality revolves around a form where users define operating hours for their shops.
-While the standard expected input is a range like `10:00 - 18:00`,
+The standard expected input is a range like `10:00 - 18:00`,
 the system must flexibly handle specific edge cases and midnight transitions.
 
 ### Operating Hours Logic

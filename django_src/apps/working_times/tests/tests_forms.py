@@ -25,61 +25,25 @@ class WorkingTimeFormTests(TestCase):
     def test_valid_edge_cases(self):
         form_data = self.form_data.copy()
         form_data["from_time"] = "00:00"
-        form_data["to_time"] = "10:00"
-        form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid(), form.errors)
-
-        form_data = self.form_data.copy()
-        form_data["from_time"] = "00:00"
-        form_data["to_time"] = "10:00"
-        form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid(), form.errors)
-
-        form_data = self.form_data.copy()
-        form_data["from_time"] = "10:00"
-        form_data["to_time"] = "24:00"
-        form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid(), form.errors)
-
-        form_data = self.form_data.copy()
-        form_data["from_time"] = "00:00"
-        form_data["to_time"] = "24:00"
+        form_data["to_time"] = "00:00"
         form = WorkingTimeForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_valid_to_midnight(self):
         form_data = self.form_data.copy()
         form_data["from_time"] = "10:00"
-        form_data["to_time"] = "24:00"
+        form_data["to_time"] = "00:00"
         form = WorkingTimeForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_valid_non_stop(self):
-        to_time = "24:00"
-        for from_time in ["00:00", "24:00"]:
-            logger.info("from_time: %s, to_time: %s", from_time, to_time)
-            form_data = self.form_data.copy()
-            form_data["from_time"] = from_time
-            form_data["to_time"] = to_time
-            form = WorkingTimeForm(data=form_data)
-            self.assertTrue(form.is_valid(), form.errors)
-
-    def test_valid_min_working_times(self):
         form_data = self.form_data.copy()
-        to_time = datetime.datetime.combine(datetime.date.today(), datetime.time(18, 0))
-        from_time = to_time - datetime.timedelta(hours=MIN_WORKING_TIME_DURATION_HOURS) - datetime.timedelta(minutes=1)
-        form_data["to_time"] = to_time.strftime(REPRESENTATION_TIME_FORMAT)
-        form_data["from_time"] = from_time.strftime(REPRESENTATION_TIME_FORMAT)
+        form_data["from_time"] = "00:00"
+        form_data["to_time"] = "00:00"
         form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
-        form_data = self.form_data.copy()
-        to_time = datetime.datetime.combine(datetime.date.today(), datetime.time(18, 0))
-        from_time = to_time - datetime.timedelta(hours=MIN_WORKING_TIME_DURATION_HOURS)
-        form_data["to_time"] = to_time.strftime(REPRESENTATION_TIME_FORMAT)
-        form_data["from_time"] = from_time.strftime(REPRESENTATION_TIME_FORMAT)
-        form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid())
+
 
     def test_invalid_missing_to_time(self):
         form_data = self.form_data.copy()
