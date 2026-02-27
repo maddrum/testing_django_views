@@ -23,10 +23,10 @@ class WorkingTimeForm(forms.ModelForm):
         """
         return datetime.datetime.combine(datetime.date.today(), time)
 
-    def _adjust_midnight(self) -> None:
+    def _adjust_midnight(self, field: str) -> None:
         """
 
-        Adjusts the `to_time` field to handle midnight user input cases.
+        Adjusts the given time field to handle midnight user input cases.
 
         If the user inputs 24:00(:00)..., this method will convert it to 00:00,
         as that is handled on model level.
@@ -35,14 +35,16 @@ class WorkingTimeForm(forms.ModelForm):
         are NOT valid in from `datetime.time` perspective,
         but those ARE valid from human perspective.
 
+        :param field: The field to adjust.
+
         :return: None
 
         """
 
-        if not bool(self.data.get("to_time")):
+        if not bool(self.data.get(field)):
             return
 
-        _value = self.data["to_time"].split(":")
+        _value = self.data[field].split(":")
         if len(_value) <= 1:
             return
 
@@ -57,7 +59,8 @@ class WorkingTimeForm(forms.ModelForm):
         self.data["to_time"] = ":".join(_value)
 
     def full_clean(self):
-        self._adjust_midnight()
+        self._adjust_midnight(field="from_time")
+        self._adjust_midnight(field="to_time")
         super().full_clean()
 
     def clean(self):
