@@ -1,8 +1,6 @@
-import datetime
-
 from django.test import TestCase
 
-from ..forms import WorkingTimeForm
+from apps.working_times.forms import WorkingTimeForm
 
 
 class WorkingTimeFormTests(TestCase):
@@ -14,43 +12,82 @@ class WorkingTimeFormTests(TestCase):
             "note": "Test note",
         }
 
-    def expand_datetime(self, time):
-        return datetime.datetime.combine(datetime.date.today(), time)
-
     def test_valid(self):
         form = WorkingTimeForm(data=self.form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_valid_to_midnight(self):
         form_data = self.form_data.copy()
         form_data["from_time"] = "10:00"
+        form_data["to_time"] = "24:00"
+        form = WorkingTimeForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        form_data = self.form_data.copy()
+        form_data["from_time"] = "10:00"
         form_data["to_time"] = "00:00"
         form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_invalid_missing_to_time(self):
+        form_data = self.form_data.copy()
+        form_data["to_time"] = ""
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
+
+        form_data = self.form_data.copy()
+        del form_data["to_time"]
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
 
     def test_invalid_from_and_to_time(self):
-        _form_data = self.form_data.copy()
-        _form_data["from_time"] = "24:00"
-        form = WorkingTimeForm(data=_form_data)
-        self.assertFalse(form.is_valid())
+        form_data = self.form_data.copy()
+        form_data["from_time"] = "24:01"
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
 
-        _form_data = self.form_data.copy()
-        _form_data["to_time"] = "24:00"
-        form = WorkingTimeForm(data=_form_data)
+        form_data = self.form_data.copy()
+        form_data["from_time"] = "not time"
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
+
+        form_data = self.form_data.copy()
+        form_data["to_time"] = "24:01"
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
+
+        form_data = self.form_data.copy()
+        form_data["to_time"] = "not time"
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid(), form.errors)
+
+    def test_invalid_midnight(self):
+        form_data = self.form_data.copy()
+        form_data["to_time"] = "24:00"
+        form_data["from_time"] = "00:00"
+        form = WorkingTimeForm(data=form_data)
         self.assertFalse(form.is_valid())
+        self.assertIn("End time must be greater than start time", form.errors["__all__"], form.errors)
+
+        form_data = self.form_data.copy()
+        form_data["to_time"] = "00:00"
+        form_data["from_time"] = "24:00"
+        form = WorkingTimeForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("End time must be greater than start time", form.errors["__all__"], form.errors)
 
     def test_invalid_start_time_greater_than_end_time(self):
         form_data = self.form_data.copy()
         form_data["from_time"] = "19:00"
         form = WorkingTimeForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn("End time must be greater than start time", form.errors["__all__"])
+        self.assertIn("End time must be greater than start time", form.errors["__all__"], form.errors)
 
         form_data = self.form_data.copy()
         form_data["from_time"] = "18:00"
         form = WorkingTimeForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn("End time must be greater than start time", form.errors["__all__"])
+        self.assertIn("End time must be greater than start time", form.errors["__all__"], form.errors)
 
         form_data = self.form_data.copy()
         form_data["to_time"] = "00:00"
@@ -66,8 +103,8 @@ class WorkingTimeFormTests(TestCase):
         form_data = self.form_data.copy()
         form_data["note"] = ""
         form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
         del form_data["note"]
         form = WorkingTimeForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)

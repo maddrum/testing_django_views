@@ -4,9 +4,18 @@ from django.test import TestCase
 from model_bakery import baker
 
 from apps.working_times.models import WorkingTime
+from apps.working_times.settings import REPRESENTATION_TIME_FORMAT
 
 
 class WorkingTimeTests(TestCase):
+    def test_str(self):
+        working_time = baker.make(
+            WorkingTime,
+            from_time=datetime.time(8, 0),
+            to_time=datetime.time(12, 0),
+        )
+        self.assertEqual("08:00:00 - 12:00:00", str(working_time))
+
     def test_time_of_day_morning(self):
         working_time = baker.make(
             WorkingTime,
@@ -37,10 +46,40 @@ class WorkingTimeTests(TestCase):
         )
         self.assertEqual("Afternoon", working_time.time_of_day)
 
-    def test_str(self):
+    def test_readable_time(self):
         working_time = baker.make(
             WorkingTime,
-            from_time=datetime.time(8, 0),
-            to_time=datetime.time(12, 0),
+            from_time=datetime.time(11, 59),
+            to_time=datetime.time(0, 0),
         )
-        self.assertEqual("08:00:00 - 12:00:00", str(working_time))
+        expected = f"{working_time.from_time.strftime(REPRESENTATION_TIME_FORMAT)} - midnight"
+        self.assertEqual(expected, working_time.readable_time)
+
+        working_time = baker.make(
+            WorkingTime,
+            from_time=datetime.time(0, 0),
+            to_time=datetime.time(0, 0),
+        )
+        self.assertEqual("Non-stop", working_time.readable_time)
+
+        working_time = baker.make(
+            WorkingTime,
+            from_time=datetime.time(0, 0),
+            to_time=datetime.time(10, 0),
+        )
+        expected = (
+            f"{working_time.from_time.strftime(REPRESENTATION_TIME_FORMAT)} - "
+            f"{working_time.to_time.strftime(REPRESENTATION_TIME_FORMAT)}"
+        )
+        self.assertEqual(expected, working_time.readable_time)
+
+        working_time = baker.make(
+            WorkingTime,
+            from_time=datetime.time(0, 0),
+            to_time=datetime.time(10, 0),
+        )
+        expected = (
+            f"{working_time.from_time.strftime(REPRESENTATION_TIME_FORMAT)} - "
+            f"{working_time.to_time.strftime(REPRESENTATION_TIME_FORMAT)}"
+        )
+        self.assertEqual(expected, working_time.readable_time)
