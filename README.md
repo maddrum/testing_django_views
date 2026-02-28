@@ -34,5 +34,7 @@ and never miss a chance to buy new jeans or shoes for going too early or too lat
 3. Copy and rename `./django_src/settings/settings-sample.py` to `./django_src/settings/settings.py`
 4. Adjust any settings, if needed
 5. Run `docker-compose up --build`
+6. Run `docker-compose exec web python manage.py migrate`
+7. Run `docker-compose exec web python manage.py createsuperuser`
 
 > Note: Both local `.env` and `settings.py` are excluded from git, so you are free to do whatever you like.
