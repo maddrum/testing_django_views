@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "apps.working_times.apps.WorkingTimesConfig",
+    "apps.main_app.apps.MainAppConfig",
 ]
 
 MIDDLEWARE = [
