@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
-{% block content %}{% endblock %}
+<div class="container mx-auto px-4 py-8 {% block container_classes %}{% endblock container_classes %}">
+    {% block content %}{% endblock content %}
+</div>
 </body>
 </html>
